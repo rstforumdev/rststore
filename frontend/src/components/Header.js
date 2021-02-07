@@ -30,7 +30,11 @@ const Header = () => {
       py='6'
       px='6'
       background='gray.800'
-      shadow='md'>
+      shadow='md'
+      pos='fixed'
+      w='100%'
+      top='0'
+      zIndex={2}>
       <Flex align='center' mr={5}>
         <Heading
           as='h1'
