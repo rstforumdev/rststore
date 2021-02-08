@@ -99,7 +99,7 @@ const products = [
     brand: 'Chanel',
     category: 'Women Fashion',
     price: 9500,
-    countInStock: 18,
+    countInStock: 0,
     rating: 4.2,
     numReviews: 5
   }

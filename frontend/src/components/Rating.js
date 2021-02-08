@@ -3,10 +3,12 @@ import { Icon, Flex, Text, Box } from '@chakra-ui/react'
 import { IoStar, IoStarOutline, IoStarHalf } from 'react-icons/io5'
 import PropTypes from 'prop-types'
 
-const Rating = ({ value, text, color = 'red.500' }) => {
+const Rating = ({ value, text, alignment, color = 'red.500' }) => {
   return (
-    <Flex alignItems='flex-star' direction='column'>
-      <Box>
+    <Flex
+      alignItems='flex-start'
+      direction={alignment === 'single' ? 'row' : 'column'}>
+      <Box lineHeight='1.3'>
         <Icon
           color={color}
           as={value >= 1 ? IoStar : value >= 0.5 ? IoStarHalf : IoStarOutline}
@@ -28,7 +30,7 @@ const Rating = ({ value, text, color = 'red.500' }) => {
           as={value >= 5 ? IoStar : value >= 4.5 ? IoStarHalf : IoStarOutline}
         />
       </Box>
-      <Text ml='1'>{text && text}</Text>
+      <Text ml={alignment === 'single' ? 2 : 0}>{text && text}</Text>
     </Flex>
   )
 }

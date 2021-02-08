@@ -23,6 +23,7 @@ const Product = ({ product }) => {
           src={product.image}
           alt={product.name}
           h='380px'
+          w='full'
           objectFit='cover'
         />
         <Flex
@@ -39,7 +40,7 @@ const Product = ({ product }) => {
               value={product.rating}
               text={`${product.numReviews} reviews`}
             />
-            <Text fontSize='2xl' fontWeight='medium' color='blue.600'>
+            <Text fontSize='2xl' fontWeight='medium' color='teal.600'>
               ₹{product.price}
             </Text>
           </Flex>
