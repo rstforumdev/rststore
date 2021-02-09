@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import { Link as RouterLink } from 'react-router-dom'
 import {
   Flex,
@@ -7,16 +8,20 @@ import {
   Heading,
   Text,
   Button,
-  Container,
-  Divider,
-  Tag
+  Divider
 } from '@chakra-ui/react'
 import Rating from '../components/Rating'
-import products from '../products'
 
 const ProductScreen = ({ match }) => {
-  const product = products.find(p => p._id === match.params.id)
-  // console.log(product)
+  const [product, setProduct] = useState({})
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const { data } = await axios.get(`/api/products/${match.params.id}`)
+      setProduct(data)
+    }
+    fetchProduct()
+  }, [])
 
   return (
     <>
@@ -35,7 +40,7 @@ const ProductScreen = ({ match }) => {
             {product.name}
           </Heading>
           <Rating
-            value={product.rating}
+            value={product.rating || 0} // because the request takes some time and propTypes will complain
             text={`${product.numReviews} reviews`}
             alignment='single'
           />
