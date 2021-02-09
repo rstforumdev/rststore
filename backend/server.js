@@ -5,7 +5,7 @@ const app = express()
 
 // show this once basic server setup is done
 app.get('/', (req, res) => {
-  res.send('API is running')
+  res.send('API is running...')
 })
 
 app.get('/api/products', (req, res) => {
