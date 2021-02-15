@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Grid, Heading } from '@chakra-ui/react'
 import Product from '../components/Product'
+import { listProducts } from '../actions/productActions'
 
 const HomeScreen = () => {
-  const [products, setProducts] = useState([])
+  const dispatch = useDispatch()
 
-  // Make a request to the backend
   useEffect(() => {
-    // will run whenever our component loads
-    const fetchProducts = async () => {
-      const { data } = await axios.get('/api/products')
-      setProducts(data)
-    }
+    dispatch(listProducts())
+  }, [dispatch])
+  // we pass dispatch as a dependency
+  // so everything dispatch changes, our component will reload
 
-    fetchProducts()
-  }, [])
+  // ADD THIS TEMPORARILY AND SHOW THE REDUX USAGE IN THE DEVTOOLS
+  const products = []
 
   return (
     <>
