@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link as RouterLink } from 'react-router-dom'
 import {
@@ -8,14 +8,17 @@ import {
   Heading,
   Text,
   Button,
-  Divider
+  Divider,
+  Select
 } from '@chakra-ui/react'
 import Rating from '../components/Rating'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { listProductDetails } from '../actions/productActions'
 
-const ProductScreen = ({ match }) => {
+const ProductScreen = ({ match, history }) => {
+  const [qty, setQty] = useState(0)
+
   const dispatch = useDispatch() // to dispatch the action we created
 
   const productDetails = useSelector(state => state.productDetails)
@@ -26,6 +29,14 @@ const ProductScreen = ({ match }) => {
   }, [dispatch, match])
 
   // const product = [] // just to see the state in the devtools
+
+  // what we want here
+  // is go to the cart page, but we want to have some params,
+  // whatever the product id is and the quantity as a query string
+  const addToCartHandler = () => {
+    // history.push is used for redirecting
+    history.push(`/cart/${match.params.id}?qty=${qty}`)
+  }
 
   return (
     <>
@@ -77,7 +88,25 @@ const ProductScreen = ({ match }) => {
               </Text>
             </Flex>
             <Divider />
+
+            {product.countInStock > 0 && (
+              <Flex justifyContent='space-between' py='2'>
+                <Text>Qty:</Text>
+                <Select
+                  value={qty}
+                  onChange={e => setQty(e.target.value)}
+                  width='30%'>
+                  {[...Array(product.countInStock).keys()].map(x => (
+                    <option key={x + 1} value={x + 1}>
+                      {x + 1}
+                    </option>
+                  ))}
+                </Select>
+              </Flex>
+            )}
+
             <Button
+              onClick={addToCartHandler}
               bgColor='gray.800'
               textTransform='uppercase'
               letterSpacing='wide'
