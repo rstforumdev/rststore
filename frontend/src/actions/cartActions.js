@@ -1,7 +1,7 @@
 // we need axios to make a request to /api/products/:id
 // to get the data/fields for that particular product
 import axios from 'axios'
-import { CART_ADD_ITEM } from '../constants/cartConstants'
+import { CART_ADD_ITEM, CART_REMOVE_ITEM } from '../constants/cartConstants'
 
 // id and qty we will get from the url param
 // we will need to use thunk as we are making an async request
@@ -30,5 +30,14 @@ export const addToCart = (id, qty) => async (dispatch, getState) => {
   // and we can only store strings in the browser localStorage
   // hence we have to stringify it. And when we want to take it out and
   // read, we will have to parse it using JSON.parse
+  localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems))
+}
+
+export const removeFromCart = id => (dispatch, getState) => {
+  dispatch({
+    type: CART_REMOVE_ITEM,
+    payload: id
+  })
+
   localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems))
 }

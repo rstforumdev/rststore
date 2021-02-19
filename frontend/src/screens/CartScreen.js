@@ -13,9 +13,9 @@ import {
   Button,
   Icon
 } from '@chakra-ui/react'
-import Message from '../components/Message'
-import { addToCart } from '../actions/cartActions'
 import { IoTrashBinSharp } from 'react-icons/io5'
+import Message from '../components/Message'
+import { addToCart, removeFromCart } from '../actions/cartActions'
 
 // to get the location - query string. For ex. ?qty=10
 // we need `location` as well to use that
@@ -41,7 +41,7 @@ const CartScreen = ({ match, location, history }) => {
   }, [dispatch, productId, qty])
 
   const removeFromCartHandler = id => {
-    console.log('remove')
+    dispatch(removeFromCart(id))
   }
 
   const checkoutHandler = () => {
@@ -89,7 +89,7 @@ const CartScreen = ({ match, location, history }) => {
                       </Link>
                     </Text>
                     <Text fontWeight='bold' fontSize='lg'>
-                      ${item.price}
+                      ₹{item.price}
                     </Text>
                     {/* Copy this from ProductScreen, but change it to dispatch addToCart() */}
                     <Select
@@ -127,13 +127,17 @@ const CartScreen = ({ match, location, history }) => {
                 <Flex direction='column'>
                   <Heading as='h2' fontSize='3xl'>
                     Subtotal (
-                    {cartItems.reduce((acc, currItem) => acc + currItem.qty, 0)}
+                    {cartItems.reduce(
+                      (acc, currItem) => acc + (currItem.qty || 1),
+                      0
+                    )}
                     ) items
                   </Heading>
                   <Text fontWeight='bold' fontSize='2xl' color='blue.600'>
-                    $
+                    ₹
                     {cartItems.reduce(
-                      (acc, currItem) => acc + currItem.qty * currItem.price,
+                      (acc, currItem) =>
+                        acc + (currItem.qty || 1) * currItem.price,
                       0
                     )}
                   </Text>
