@@ -29,4 +29,30 @@ const authUser = asyncHandler(async (req, res) => {
   }
 })
 
-export { authUser }
+// @desc    Get user profile
+// @route   GET /api/user/profile
+// @access  private
+const getUserProfile = asyncHandler(async (req, res) => {
+  // const user = await User.findById(req.user._id)
+  // now this req.user property doesn't exist on the request object
+  // we will create a middleware that will add this user key on the
+  // request object.
+
+  // res.send('SUCCESS') // temp
+
+  const user = await User.findById(req.user._id)
+
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin
+    })
+  } else {
+    res.status(404)
+    throw new Error('User not found')
+  }
+})
+
+export { authUser, getUserProfile }
