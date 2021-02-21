@@ -7,3 +7,5 @@ import {
 
 router.route('/').get(getProducts)
 router.route('/:id').get(getProductById)
+
+export default router
