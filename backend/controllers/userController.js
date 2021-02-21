@@ -1,0 +1,31 @@
+import asyncHandler from 'express-async-handler'
+import User from '../models/userModel.js'
+
+// @desc    Auth user & get token
+// @route   POST /api/users/login
+// @access  public
+const authUser = asyncHandler(async (req, res) => {
+  // Get data by body
+  const { email, password } = req.body
+
+  // Just an example to see that we can actually get
+  // the email/password data from the body. Check this in Postman.
+  // res.send({ email, password })
+
+  const user = await User.findOne({ email }) // shorthand for User.findOne({email: email})
+
+  if (user && (await user.matchPassword(password))) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token: null // null for now as we haven't added the functionality
+    })
+  } else {
+    res.status(401) // 401 - unauthorized
+    throw new Error('Invalid email or password')
+  }
+})
+
+export { authUser }
