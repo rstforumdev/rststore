@@ -6,12 +6,14 @@ import {
   productDetailsReducer
 } from './reducers/productReducers'
 import { cartReducer } from './reducers/cartReducers'
+import { userLoginReducer } from './reducers/userReducers'
 
 const reducer = combineReducers({
   productList: productListReducer, // productList will be a state variable
   // add the above first and then see this state in the devtools
   productDetails: productDetailsReducer, // create another part of the state
-  cart: cartReducer
+  cart: cartReducer,
+  userLogin: userLoginReducer
 })
 
 // Get any item that is present in localStorage
@@ -19,7 +21,15 @@ const cartItemsFromStorage = localStorage.getItem('cartItems')
   ? JSON.parse(localStorage.getItem('cartItems'))
   : []
 
-const initialState = { cart: { cartItems: cartItemsFromStorage } }
+// Get any user that is present in localStorage
+const userInfoFromStorage = localStorage.getItem('userInfo')
+  ? JSON.parse(localStorage.getItem('userInfo'))
+  : null
+
+const initialState = {
+  cart: { cartItems: cartItemsFromStorage },
+  userLogin: { userInfo: userInfoFromStorage }
+}
 
 const middleware = [thunk]
 
