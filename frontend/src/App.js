@@ -6,16 +6,18 @@ import Footer from './components/Footer'
 import HomeScreen from './screens/HomeScreen'
 import ProductScreen from './screens/ProductScreen'
 import CartScreen from './screens/CartScreen'
+import LoginScreen from './screens/LoginScreen'
 
 const App = () => {
   return (
     <Router>
       <Header />
-      <Container maxW='8xl'>
-        <Flex mt='72px' as='main' minH='xl' py='6' px='6' direction='column'>
-          <Route path='/' exact component={HomeScreen} />
+      <Container maxW='8xl' bgColor='gray.200'>
+        <Flex mt='72px' as='main' py='12' px='6' direction='column'>
+          <Route path='/login' component={LoginScreen} />
           <Route path='/product/:id' component={ProductScreen} />
           <Route path='/cart/:id?' component={CartScreen} />
+          <Route path='/' exact component={HomeScreen} />
         </Flex>
       </Container>
       <Footer />

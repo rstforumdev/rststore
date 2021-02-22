@@ -16,6 +16,7 @@ const Product = ({ product }) => {
         bgColor='white'
         overflow='hidden'
         transition='all'
+        shadow='sm'
         _hover={{
           shadow: 'md'
         }}>
