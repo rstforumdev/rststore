@@ -50,7 +50,9 @@ const ProductScreen = ({ match, history }) => {
       ) : error ? (
         <Message>{error}</Message>
       ) : (
-        <Grid templateColumns='5fr 4fr 3fr' gap='10'>
+        <Grid
+          templateColumns={{ sm: '1fr', md: '5fr 7fr', lg: '5fr 4fr 3fr' }}
+          gap='10'>
           <Image src={product.image} alt={product.name} borderRadius='md' />
           <Flex direction='column'>
             <Heading as='h6' fontSize='base' color='gray.500'>

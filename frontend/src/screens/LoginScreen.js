@@ -14,19 +14,33 @@ import {
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
-import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
 import { login } from '../actions/userActions'
 
-const LoginScreen = ({ location }) => {
+const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  // functionality
+  const dispatch = useDispatch()
+
+  const userLogin = useSelector(state => state.userLogin)
+  const { loading, error, userInfo } = userLogin
+
   const redirect = location.search ? location.search.split('=')[1] : '/'
+
+  // If the user data/token already exists then just redirect
+  // the user to where ever it is it wants to go
+  useEffect(() => {
+    if (userInfo) {
+      history.push(redirect)
+    }
+  }, [history, userInfo, redirect])
 
   const submitHandler = e => {
     e.preventDefault()
     // DISPATCH LOGIN
+    dispatch(login(email, password))
   }
 
   return (
@@ -35,6 +49,7 @@ const LoginScreen = ({ location }) => {
         <Heading as='h1' mb='8' fontSize='3xl'>
           Login
         </Heading>
+        {error && <Message type='error'>{error}</Message>}
         <form onSubmit={submitHandler}>
           <FormControl id='email' isRequired>
             <FormLabel>Email Address</FormLabel>
@@ -55,7 +70,7 @@ const LoginScreen = ({ location }) => {
               onChange={e => setPassword(e.target.value)}
             />
           </FormControl>
-          <Button type='submit' mt='4' colorScheme='teal'>
+          <Button isLoading={loading} type='submit' mt='4' colorScheme='teal'>
             Login
           </Button>
         </form>

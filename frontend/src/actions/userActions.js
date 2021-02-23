@@ -9,7 +9,7 @@ import {
 // Login action to make a request and get a token
 export const login = (email, password) => async dispatch => {
   try {
-    dispatch(USER_LOGIN_REQUEST)
+    dispatch({ type: USER_LOGIN_REQUEST })
 
     // Set request headers
     const config = {

@@ -66,7 +66,7 @@ const Header = () => {
       </Box>
 
       <Box
-        display={{ sm: show ? 'block' : 'none', md: 'flex' }}
+        display={{ base: show ? 'block' : 'none', md: 'flex' }}
         width={{ sm: 'full', md: 'auto' }}
         alignItems='center'>
         <MenuItems url='/cart'>
