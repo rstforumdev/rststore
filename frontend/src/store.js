@@ -6,7 +6,11 @@ import {
   productDetailsReducer
 } from './reducers/productReducers'
 import { cartReducer } from './reducers/cartReducers'
-import { userLoginReducer, userRegisterReducer } from './reducers/userReducers'
+import {
+  userLoginReducer,
+  userRegisterReducer,
+  userDetailsReducer
+} from './reducers/userReducers'
 
 const reducer = combineReducers({
   productList: productListReducer, // productList will be a state variable
@@ -14,7 +18,8 @@ const reducer = combineReducers({
   productDetails: productDetailsReducer, // create another part of the state
   cart: cartReducer,
   userLogin: userLoginReducer,
-  userRegister: userRegisterReducer
+  userRegister: userRegisterReducer,
+  userDetails: userDetailsReducer
 })
 
 // Get any item that is present in localStorage
