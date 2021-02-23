@@ -1,3 +1,5 @@
+// Copied the LoginScreen and then modified it
+
 import React, { useState, useEffect } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import {
@@ -14,17 +16,20 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import FormContainer from '../components/FormContainer'
-import { login } from '../actions/userActions'
+import { register } from '../actions/userActions' // import register action
 
-const LoginScreen = ({ location, history }) => {
+const RegisterScreen = ({ location, history }) => {
+  const [name, setName] = useState('') // new
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('') // new
+  const [message, setMessage] = useState(null) // new
 
   // functionality
   const dispatch = useDispatch()
 
-  const userLogin = useSelector(state => state.userLogin)
-  const { loading, error, userInfo } = userLogin
+  const userRegister = useSelector(state => state.userRegister) // new
+  const { loading, error, userInfo } = userRegister // new
 
   const redirect = location.search ? location.search.split('=')[1] : '/'
 
@@ -38,18 +43,34 @@ const LoginScreen = ({ location, history }) => {
 
   const submitHandler = e => {
     e.preventDefault()
-    // DISPATCH LOGIN
-    dispatch(login(email, password))
+    // check if passwords are equal
+    if (password !== confirmPassword) {
+      setMessage('Passwords do not match')
+    } else {
+      // DISPATCH REGISTER
+      dispatch(register(name, email, password, confirmPassword))
+    }
   }
 
   return (
     <Flex w='full' alignItems='center' justifyContent='center' py='5'>
       <FormContainer>
         <Heading as='h1' mb='8' fontSize='3xl'>
-          Login
+          Sign Up
         </Heading>
+        {message && <Message type='error'>{message}</Message>}
         {error && <Message type='error'>{error}</Message>}
         <form onSubmit={submitHandler}>
+          <FormControl id='name' isRequired>
+            <FormLabel>Name</FormLabel>
+            <Input
+              type='text'
+              placeholder='Enter Full Name'
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+          </FormControl>
+          <Spacer h='3' />
           <FormControl id='email' isRequired>
             <FormLabel>Email Address</FormLabel>
             <Input
@@ -69,17 +90,27 @@ const LoginScreen = ({ location, history }) => {
               onChange={e => setPassword(e.target.value)}
             />
           </FormControl>
+          <Spacer h='3' />
+          <FormControl id='confirmPassword' isRequired>
+            <FormLabel>Confirm Password</FormLabel>
+            <Input
+              type='password'
+              placeholder='Enter password Again'
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+            />
+          </FormControl>
           <Button isLoading={loading} type='submit' mt='4' colorScheme='teal'>
-            Login
+            Register
           </Button>
         </form>
         <Flex pt='5'>
           <Text fontWeight='semibold'>
-            New Customer?{' '}
+            Have an account?{' '}
             <Link
               as={RouterLink}
-              to={redirect ? `/register?redirect=${redirect}` : '/register'}>
-              Register
+              to={redirect ? `/login?redirect=${redirect}` : '/login'}>
+              Login
             </Link>
           </Text>
         </Flex>
@@ -88,4 +119,4 @@ const LoginScreen = ({ location, history }) => {
   )
 }
 
-export default LoginScreen
+export default RegisterScreen

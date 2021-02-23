@@ -7,6 +7,7 @@ import HomeScreen from './screens/HomeScreen'
 import ProductScreen from './screens/ProductScreen'
 import CartScreen from './screens/CartScreen'
 import LoginScreen from './screens/LoginScreen'
+import RegisterScreen from './screens/RegisterScreen'
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
       <Header />
       <Container maxW='8xl' bgColor='gray.200'>
         <Flex mt='72px' as='main' py='12' px='6' direction='column'>
+          <Route path='/register' component={RegisterScreen} />
           <Route path='/login' component={LoginScreen} />
           <Route path='/product/:id' component={ProductScreen} />
           <Route path='/cart/:id?' component={CartScreen} />
