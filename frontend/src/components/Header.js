@@ -1,7 +1,20 @@
 import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link as RouterLink } from 'react-router-dom'
-import { Flex, Heading, Link, Box, Icon } from '@chakra-ui/react'
+import {
+  Flex,
+  Heading,
+  Link,
+  Box,
+  Icon,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem
+} from '@chakra-ui/react'
+import { IoChevronDown } from 'react-icons/io5'
 import { HiShoppingBag, HiOutlineMenuAlt3, HiUser } from 'react-icons/hi'
+import { logout } from '../actions/userActions'
 
 const MenuItems = ({ children, url }) => (
   <Link
@@ -22,6 +35,17 @@ const MenuItems = ({ children, url }) => (
 
 const Header = () => {
   const [show, setShow] = useState(false)
+
+  // dispatch func
+  const dispatch = useDispatch()
+
+  // Get access to the userInfo state
+  const userLogin = useSelector(state => state.userLogin)
+  const { userInfo } = userLogin
+
+  const logoutHandler = e => {
+    dispatch(logout())
+  }
 
   return (
     <Flex
@@ -75,11 +99,32 @@ const Header = () => {
             Cart
           </Flex>
         </MenuItems>
-        <MenuItems url='/login'>
-          <Flex alignItems='center'>
-            <Icon as={HiUser} w={4} h={4} mr='1' /> Sign In
-          </Flex>
-        </MenuItems>
+        {/* Logic to handle showing */}
+        {userInfo ? (
+          <Menu>
+            <MenuButton
+              as={Link}
+              color='white'
+              fontSize='sm'
+              fontWeight='semibold'
+              _hover={{ textDecoration: 'none', opacity: '0.7' }}
+              textTransform='uppercase'>
+              {userInfo.name} <Icon as={IoChevronDown} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem as={RouterLink} to='/profile'>
+                Profile
+              </MenuItem>
+              <MenuItem onClick={logoutHandler}>Logout</MenuItem>
+            </MenuList>
+          </Menu>
+        ) : (
+          <MenuItems url='/login'>
+            <Flex alignItems='center'>
+              <Icon as={HiUser} w={4} h={4} mr='1' /> Sign In
+            </Flex>
+          </MenuItems>
+        )}
       </Box>
     </Flex>
   )
