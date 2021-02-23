@@ -1,5 +1,3 @@
-// Copied the LoginScreen and then modified it
-
 import React, { useState, useEffect } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import {
@@ -14,8 +12,7 @@ import {
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
-import FormContainer from '../components/FormContainer'
-import { getUserDetails } from '../actions/userActions'
+import { getUserDetails, updateUserProfile } from '../actions/userActions'
 
 const ProfileScreen = ({ location, history }) => {
   const [name, setName] = useState('')
@@ -33,6 +30,11 @@ const ProfileScreen = ({ location, history }) => {
   // we don't him/her to see this page
   const userLogin = useSelector(state => state.userLogin)
   const { userInfo } = userLogin
+
+  // GET THE SUCCESS value from the state. If true we can show a message
+  // to the user saying profile was successfully updated
+  const userUpdateProfile = useSelector(state => state.userUpdateProfile)
+  const { success } = userUpdateProfile
 
   // If the user data/token already exists then just redirect
   // the user to where ever it is it wants to go
@@ -58,7 +60,8 @@ const ProfileScreen = ({ location, history }) => {
     if (password !== confirmPassword) {
       setMessage('Passwords do not match')
     } else {
-      // TODO: DISPATCH UPDATE PROFILE
+      // DISPATCH UPDATE PROFILE
+      dispatch(updateUserProfile({ id: user._id, name, email, password })) // because _id will be invalid
     }
   }
 
@@ -75,8 +78,9 @@ const ProfileScreen = ({ location, history }) => {
         </Heading>
         {message && <Message type='error'>{message}</Message>}
         {error && <Message type='error'>{error}</Message>}
+        {success && <Message type='success'>Profile updated</Message>}
         <form onSubmit={submitHandler}>
-          <FormControl id='name' isRequired>
+          <FormControl id='name'>
             <FormLabel>Name</FormLabel>
             <Input
               type='text'
@@ -86,7 +90,7 @@ const ProfileScreen = ({ location, history }) => {
             />
           </FormControl>
           <Spacer h='3' />
-          <FormControl id='email' isRequired>
+          <FormControl id='email'>
             <FormLabel>Email Address</FormLabel>
             <Input
               type='email'
@@ -96,7 +100,7 @@ const ProfileScreen = ({ location, history }) => {
             />
           </FormControl>
           <Spacer h='3' />
-          <FormControl id='password' isRequired>
+          <FormControl id='password'>
             <FormLabel>Password</FormLabel>
             <Input
               type='password'
@@ -106,7 +110,7 @@ const ProfileScreen = ({ location, history }) => {
             />
           </FormControl>
           <Spacer h='3' />
-          <FormControl id='confirmPassword' isRequired>
+          <FormControl id='confirmPassword'>
             <FormLabel>Confirm Password</FormLabel>
             <Input
               type='password'
