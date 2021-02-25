@@ -9,6 +9,7 @@ import CartScreen from './screens/CartScreen'
 import LoginScreen from './screens/LoginScreen'
 import RegisterScreen from './screens/RegisterScreen'
 import ProfileScreen from './screens/ProfileScreen'
+import ShippingScreen from './screens/ShippingScreen'
 
 const App = () => {
   return (
@@ -16,8 +17,9 @@ const App = () => {
       <Header />
       <Container maxW='8xl' bgColor='gray.200'>
         <Flex mt='72px' as='main' py='12' px='6' direction='column'>
-          <Route path='/register' component={RegisterScreen} />
+          <Route path='/shipping' component={ShippingScreen} />
           <Route path='/login' component={LoginScreen} />
+          <Route path='/register' component={RegisterScreen} />
           <Route path='/profile' component={ProfileScreen} />
           <Route path='/product/:id' component={ProductScreen} />
           <Route path='/cart/:id?' component={CartScreen} />

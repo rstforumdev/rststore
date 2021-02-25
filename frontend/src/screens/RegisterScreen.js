@@ -1,5 +1,3 @@
-// Copied the LoginScreen and then modified it
-
 import React, { useState, useEffect } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import {
