@@ -45,7 +45,7 @@ const PaymentScreen = ({ history }) => {
         <form onSubmit={submitHandler}>
           <FormControl as='fieldset'>
             <FormLabel as='legend'>Select Method</FormLabel>
-            <RadioGroup defaultValue='Paypal'>
+            <RadioGroup defaultValue={paymentMethod}>
               <HStack spacing='24px'>
                 <Radio
                   value='paypal'

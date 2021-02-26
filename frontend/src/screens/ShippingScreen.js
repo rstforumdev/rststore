@@ -84,7 +84,7 @@ const ShippingScreen = ({ history }) => {
           <Spacer h='3' />
           {/* Button */}
           <Button type='submit' mt='4' colorScheme='teal'>
-            Register
+            Continue
           </Button>
         </form>
       </FormContainer>
