@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import {
   Button,
@@ -13,8 +13,11 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import CheckoutSteps from '../components/CheckoutSteps'
+import { createOrder } from '../actions/orderActions'
 
-const PlaceOrderScreen = () => {
+const PlaceOrderScreen = ({ history }) => {
+  const dispatch = useDispatch()
+
   const cart = useSelector(state => state.cart)
 
   // SHOW THIS IN THE END
@@ -24,12 +27,36 @@ const PlaceOrderScreen = () => {
     0
   )
   cart.shippingPrice = cart.itemsPrice > 1000 ? 1000 : 0
-  cart.taxPrice = Number((12 * cart.itemsPrice) / 100)
+  cart.taxPrice = (12 * cart.itemsPrice) / 100
   cart.totalPrice = cart.itemsPrice + cart.shippingPrice + cart.taxPrice
 
+  // get the orderCreate state from our store -> write this after placeOrderHandler
+  const orderCreate = useSelector(state => state.orderCreate)
+  const { order, success, error } = orderCreate
+
+  // Will fireoff when the button is clicked. Dispatches the action.
   const placeOrderHandler = () => {
-    console.log('Order')
+    dispatch(
+      createOrder({
+        orderItems: cart.cartItems,
+        shippingAddress: cart.shippingAddress,
+        paymentMethod: cart.paymentMethod,
+        itemsPrice: cart.itemsPrice,
+        shippingPrice: cart.shippingPrice,
+        taxPrice: cart.taxPrice,
+        totalPrice: cart.totalPrice
+      })
+    )
   }
+
+  // if everything went right and the order was created, then we need to
+  // redirect the user. So we'll do that in useEffect.
+  useEffect(() => {
+    if (success) {
+      history.push(`/order/${order._id}`)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history, success])
 
   return (
     <Flex w='full' py='5' direction='column'>
@@ -60,7 +87,7 @@ const PlaceOrderScreen = () => {
             <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb='3'>
               Order Items
             </Heading>
-            <Text>
+            <Box>
               {cart.cartItems.length === 0 ? (
                 <Message>Your cart is empty</Message>
               ) : (
@@ -79,10 +106,12 @@ const PlaceOrderScreen = () => {
                           objectFit='cover'
                           mr='6'
                         />
-                        <Link as={RouterLink} to={`/product/${item.product}`}>
-                          <Text fontWeight='medium' fontSize='xl'>
-                            {item.name}
-                          </Text>
+                        <Link
+                          as={RouterLink}
+                          to={`/product/${item.product}`}
+                          fontWeight='medium'
+                          fontSize='xl'>
+                          {item.name}
                         </Link>
                       </Flex>
                       <Text fontSize='lg' fontWeight='semibold'>
@@ -93,7 +122,7 @@ const PlaceOrderScreen = () => {
                   ))}
                 </Box>
               )}
-            </Text>
+            </Box>
           </Box>
         </Flex>
 
@@ -154,6 +183,10 @@ const PlaceOrderScreen = () => {
               </Text>
             </Flex>
           </Box>
+
+          {/* Error Message */}
+          {error && <Message type='error'>{error}</Message>}
+
           <Button
             size='lg'
             textTransform='uppercase'

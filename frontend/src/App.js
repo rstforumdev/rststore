@@ -19,9 +19,9 @@ const App = () => {
       <Header />
       <Container maxW='8xl' bgColor='gray.200'>
         <Flex mt='72px' as='main' py='12' px='6' direction='column'>
-          <Route path='/placeorder' component={PlaceOrderScreen} />
           <Route path='/payment' component={PaymentScreen} />
           <Route path='/shipping' component={ShippingScreen} />
+          <Route path='/placeorder' component={PlaceOrderScreen} />
           <Route path='/login' component={LoginScreen} />
           <Route path='/register' component={RegisterScreen} />
           <Route path='/profile' component={ProfileScreen} />
