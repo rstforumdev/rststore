@@ -18,14 +18,13 @@ const protect = asyncHandler(async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1]
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
-      console.log(decoded.id)
+      // console.log(decoded.id)
 
       // Get the user's id from the token
       // select() func with -password will just exclude
       // password and return everything else
       // We have also now added a new `user` key on the `req` object
       const test1 = await User.findById(decoded.id)
-      console.log(test1)
       req.user = await User.findById(decoded.id).select('-password')
       next()
     } catch (error) {
