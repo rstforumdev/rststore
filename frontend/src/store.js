@@ -15,7 +15,8 @@ import {
 import {
   orderCreateReducer,
   orderDetailsReducer,
-  orderPayReducer
+  orderPayReducer,
+  orderMyListReducer
 } from './reducers/orderReducers'
 
 const reducer = combineReducers({
@@ -29,7 +30,8 @@ const reducer = combineReducers({
   userUpdateProfile: userUpdateProfileReducer,
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
-  orderPay: orderPayReducer
+  orderPay: orderPayReducer,
+  orderMyList: orderMyListReducer
 })
 
 // Get any item that is present in localStorage

@@ -8,11 +8,22 @@ import {
   FormLabel,
   Input,
   Spacer,
-  Grid
+  Grid,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Icon,
+  Link
 } from '@chakra-ui/react'
+import { IoWarning } from 'react-icons/io5'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
+import Loader from '../components/Loader'
 import { getUserDetails, updateUserProfile } from '../actions/userActions'
+import { listMyOrders } from '../actions/orderActions' // NEW -> STEP 55
 
 const ProfileScreen = ({ location, history }) => {
   const [name, setName] = useState('')
@@ -36,6 +47,10 @@ const ProfileScreen = ({ location, history }) => {
   const userUpdateProfile = useSelector(state => state.userUpdateProfile)
   const { success } = userUpdateProfile
 
+  // NEW -> STEP 55
+  const orderMyList = useSelector(state => state.orderMyList)
+  const { loading: loadingOrders, error: errorOrders, orders } = orderMyList
+
   // If the user data/token already exists then just redirect
   // the user to where ever it is it wants to go
   useEffect(() => {
@@ -47,6 +62,7 @@ const ProfileScreen = ({ location, history }) => {
         // That we get can have one action for both getting user by id
         // and hitting the profile endpoint
         dispatch(getUserDetails('profile'))
+        dispatch(listMyOrders()) // NEW -> STEP 55
       } else {
         setName(user.name)
         setEmail(user.email)
@@ -125,7 +141,59 @@ const ProfileScreen = ({ location, history }) => {
         </form>
       </Flex>
       <Flex direction='column'>
-        <Heading as='h2'>My Orders</Heading>
+        <Heading as='h2' mb='8'>
+          My Orders
+        </Heading>
+        {/* NEW -> STEP 55 */}
+        {loadingOrders ? (
+          <Loader />
+        ) : errorOrders ? (
+          <Message type='error'>{errorOrders}</Message>
+        ) : (
+          <Table variant='striped'>
+            <Thead>
+              <Tr>
+                <Th>ID</Th>
+                <Th>DATE</Th>
+                <Th>TOTAL</Th>
+                <Th>PAID</Th>
+                <Th>DELIVERED</Th>
+                <Th></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {orders.map(order => (
+                <Tr key={order._id}>
+                  <Td>{order._id}</Td>
+                  {/* Substring. We just want the first 10 characters */}
+                  <Td>{order.createdAt.substring(0, 10)}</Td>
+                  <Td>{order.totalPrice}</Td>
+                  <Td>
+                    {order.isPaid ? (
+                      order.paidAt.substring(0, 10)
+                    ) : (
+                      <Icon as={IoWarning} color='red' />
+                    )}
+                  </Td>
+                  <Td>
+                    {order.isDelivered ? (
+                      order.deleveredAt.substring(0, 10)
+                    ) : (
+                      <Icon as={IoWarning} color='red' />
+                    )}
+                  </Td>
+                  <Td>
+                    <Link as={RouterLink} to={`/order/${order._id}`}>
+                      <Button colorScheme='teal' size='sm'>
+                        Details
+                      </Button>
+                    </Link>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )}
       </Flex>
     </Grid>
   )
