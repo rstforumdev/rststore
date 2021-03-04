@@ -20,7 +20,7 @@ import {
   IoTrashBinSharp
 } from 'react-icons/io5'
 import { useDispatch, useSelector } from 'react-redux'
-import { listUsers } from '../actions/userActions'
+import { listUsers, deleteUsers } from '../actions/userActions' // STEP 60: IMPORT deleteUsers
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 
@@ -34,16 +34,26 @@ const UserListScreen = ({ history }) => {
   const userLogin = useSelector(state => state.userLogin)
   const { userInfo } = userLogin
 
+  // STEP 60 -> check for the success key
+  const userDelete = useSelector(state => state.userDelete)
+  const { success: successDelete } = userDelete
+
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
       dispatch(listUsers())
     } else {
       history.push('/login') // redirect to login page if not an admin
     }
-  }, [dispatch, history, userInfo])
+  }, [dispatch, history, userInfo, successDelete])
+  // STEP 60: above we pass successDelete because if that changes we want
+  // useEffect to run again and re-render the component with less no. of users
 
-  const deleteHandler = () => {
-    console.log('Delete')
+  const deleteHandler = id => {
+    // STEP 60:
+    // dispatch(deleteUsers(id)) // first just show this, then show with window.confirm
+    if (window.confirm('Are you sure?')) {
+      dispatch(deleteUsers(id))
+    }
   }
 
   return (
