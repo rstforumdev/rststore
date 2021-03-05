@@ -107,12 +107,12 @@ const UserListScreen = ({ history }) => {
                       <Button
                         mr='4'
                         as={RouterLink}
-                        to={`/user/${user._id}/edit`}
+                        to={`/admin/user/${user._id}/edit`} // STEP 62 update
                         colorScheme='teal'>
                         <Icon as={IoPencilSharp} color='white' size='sm' />
                       </Button>
                       <Button
-                        to={`/user/${user._id}/edit`}
+                        to={`/user/${user._id}/delete`} // STEP 62 -> correct the mistake here. Make delete, was edit before.
                         colorScheme='red'
                         onClick={() => deleteHandler(user._id)}>
                         <Icon as={IoTrashBinSharp} color='white' size='sm' />
