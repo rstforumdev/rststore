@@ -10,43 +10,58 @@ import {
   Input,
   Spacer,
   Link,
-  Checkbox,
-  CheckboxGroup
+  Checkbox
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { getUserDetails } from '../actions/userActions' // STEP 62
+import { getUserDetails, updateUser } from '../actions/userActions' // STEP 63
+import { USER_UPDATE_RESET } from '../constants/userConstants'
 
 const UserEditScreen = ({ match, history }) => {
-  // new
-  const userId = match.params.id // new
+  const userId = match.params.id
 
-  const [name, setName] = useState('') // new
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [isAdmin, setIsAdmin] = useState('false') // new
+  const [isAdmin, setIsAdmin] = useState('false')
 
   const dispatch = useDispatch()
 
-  // NEW
   const userDetails = useSelector(state => state.userDetails)
   const { loading, error, user } = userDetails
 
+  // STEP 63
+  const userUpdate = useSelector(state => state.userUpdate)
+  const {
+    loading: loadingUpdate,
+    error: errorUpdate,
+    success: successUpdate
+  } = userUpdate
+
   useEffect(() => {
-    // just check for any of the fields
-    // if user doesn't exist or doesn't match the URL then refetch
-    if (!user.name || user._id !== userId) {
-      dispatch(getUserDetails(userId))
+    // STEP 63
+    // We want to check for the success state (value)
+    // if it's true then we want reset the update state and
+    // then redirect the user back to the userListScreen
+    if (successUpdate) {
+      dispatch({ type: USER_UPDATE_RESET })
+      history.push('/admin/userlist')
     } else {
-      setName(user.name)
-      setEmail(user.email)
-      setIsAdmin(user.isAdmin)
+      if (!user.name || user._id !== userId) {
+        dispatch(getUserDetails(userId))
+      } else {
+        setName(user.name)
+        setEmail(user.email)
+        setIsAdmin(user.isAdmin)
+      }
     }
-  }, [user, dispatch, setName, setEmail, setIsAdmin, userId])
+  }, [user, dispatch, userId, history, successUpdate])
 
   const submitHandler = e => {
     e.preventDefault()
+    // STEP 63
+    dispatch(updateUser({ _id: userId, name, email, isAdmin }))
   }
 
   return (
@@ -59,6 +74,9 @@ const UserEditScreen = ({ match, history }) => {
           <Heading as='h1' mb='8' fontSize='3xl'>
             Edit User
           </Heading>
+          {/* STEP 63 -> checking for loadingUpdate and errorUpdate */}
+          {loadingUpdate && <Loader />}
+          {errorUpdate && <Message type='error'>{errorUpdate}</Message>}
           {loading ? (
             <Loader />
           ) : error ? (
