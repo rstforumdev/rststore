@@ -3,7 +3,8 @@ import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import {
   productListReducer,
-  productDetailsReducer
+  productDetailsReducer,
+  productDeleteReducer
 } from './reducers/productReducers'
 import { cartReducer } from './reducers/cartReducers'
 import {
@@ -23,15 +24,15 @@ import {
 } from './reducers/orderReducers'
 
 const reducer = combineReducers({
-  productList: productListReducer, // productList will be a state variable
-  // add the above first and then see this state in the devtools
-  productDetails: productDetailsReducer, // create another part of the state
+  productList: productListReducer,
+  productDetails: productDetailsReducer,
+  productDelete: productDeleteReducer, // added it here for consistancy
   cart: cartReducer,
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userDetails: userDetailsReducer,
   userUpdateProfile: userUpdateProfileReducer,
-  userList: userListReducer, // added it here for consistancy
+  userList: userListReducer,
   userDelete: userDeleteReducer,
   userUpdate: userUpdateReducer,
   orderCreate: orderCreateReducer,

@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react'
 import { IoPencilSharp, IoTrashBinSharp, IoAdd } from 'react-icons/io5'
 import { useDispatch, useSelector } from 'react-redux'
-import { listProducts } from '../actions/productActions'
+import { listProducts, deleteProduct } from '../actions/productActions'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 
@@ -30,17 +30,25 @@ const ProductListScreen = ({ history, match }) => {
   const userLogin = useSelector(state => state.userLogin)
   const { userInfo } = userLogin
 
+  // We need this to get the success value on successful delete
+  const productDelete = useSelector(state => state.productDelete)
+  const {
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete
+  } = productDelete
+
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
       dispatch(listProducts())
     } else {
       history.push('/login') // redirect to login page if not an admin
     }
-  }, [dispatch, history, userInfo])
+  }, [dispatch, history, userInfo, successDelete])
 
   const deleteHandler = id => {
     if (window.confirm('Are you sure?')) {
-      // Delete products
+      dispatch(deleteProduct(id))
     }
   }
 
@@ -59,6 +67,9 @@ const ProductListScreen = ({ history, match }) => {
           Create Product
         </Button>
       </Flex>
+      {/* Check for product delete loading and success and show approprite loader or message */}
+      {loadingDelete && <Loader />}
+      {errorDelete && <Message type='error'>{errorDelete}</Message>}
       {loading ? (
         <Loader />
       ) : error ? (
