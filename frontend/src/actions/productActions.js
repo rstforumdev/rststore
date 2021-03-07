@@ -8,7 +8,10 @@ import {
   PRODUCT_DETAILS_FAIL,
   PRODUCT_DELETE_REQUEST,
   PRODUCT_DELETE_SUCCESS,
-  PRODUCT_DELETE_FAIL
+  PRODUCT_DELETE_FAIL,
+  PRODUCT_CREATE_REQUEST,
+  PRODUCT_CREATE_SUCCESS,
+  PRODUCT_CREATE_FAIL
 } from '../constants/productConstants.js'
 
 // We need Redux thunk here to add a function within a function
@@ -74,6 +77,37 @@ export const deleteProduct = id => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_DELETE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+    })
+  }
+}
+
+export const createProduct = id => async (dispatch, getState) => {
+  try {
+    dispatch({ type: PRODUCT_CREATE_REQUEST })
+
+    const {
+      userLogin: { userInfo }
+    } = getState()
+
+    // Set request headers.
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`
+      }
+    }
+
+    // Make the delete request
+    const { data } = await axios.post(`/api/products/`, {}, config)
+    // Not sending any data here, as it's already hardcoded that in the backend
+
+    dispatch({ type: PRODUCT_CREATE_SUCCESS, payload: data })
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_CREATE_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message

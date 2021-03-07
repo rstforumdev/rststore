@@ -15,9 +15,14 @@ import {
 } from '@chakra-ui/react'
 import { IoPencilSharp, IoTrashBinSharp, IoAdd } from 'react-icons/io5'
 import { useDispatch, useSelector } from 'react-redux'
-import { listProducts, deleteProduct } from '../actions/productActions'
+import {
+  listProducts,
+  deleteProduct,
+  createProduct
+} from '../actions/productActions'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
+import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
 
 const ProductListScreen = ({ history, match }) => {
   const dispatch = useDispatch()
@@ -38,13 +43,36 @@ const ProductListScreen = ({ history, match }) => {
     success: successDelete
   } = productDelete
 
+  // Step 67: Getting data from the state
+  const productCreate = useSelector(state => state.productCreate)
+  const {
+    loading: loadingCreate,
+    error: errorCreate,
+    success: successCreate,
+    product: createdProduct
+  } = productCreate
+
   useEffect(() => {
-    if (userInfo && userInfo.isAdmin) {
-      dispatch(listProducts())
-    } else {
+    dispatch({ type: PRODUCT_CREATE_RESET }) // STEP 67: Immediately dispatch the action
+
+    // STEP 67: Refactor
+    if (!userInfo.isAdmin) {
       history.push('/login') // redirect to login page if not an admin
     }
-  }, [dispatch, history, userInfo, successDelete])
+
+    if (successCreate) {
+      history.push(`/admin/product/${createdProduct._id}/edit`)
+    } else {
+      dispatch(listProducts())
+    }
+  }, [
+    dispatch,
+    history,
+    userInfo,
+    successDelete,
+    successCreate,
+    createdProduct
+  ])
 
   const deleteHandler = id => {
     if (window.confirm('Are you sure?')) {
@@ -53,7 +81,8 @@ const ProductListScreen = ({ history, match }) => {
   }
 
   const createProductHandler = () => {
-    // Create products
+    // STEP 67: Create products
+    dispatch(createProduct())
   }
 
   return (
@@ -70,6 +99,9 @@ const ProductListScreen = ({ history, match }) => {
       {/* Check for product delete loading and success and show approprite loader or message */}
       {loadingDelete && <Loader />}
       {errorDelete && <Message type='error'>{errorDelete}</Message>}
+      {/* STEP 67: Loading and Error for Create */}
+      {loadingCreate && <Loader />}
+      {errorCreate && <Message type='error'>{errorDelete}</Message>}
       {loading ? (
         <Loader />
       ) : error ? (
