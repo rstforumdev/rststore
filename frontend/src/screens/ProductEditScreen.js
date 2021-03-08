@@ -1,5 +1,5 @@
-// Copied from the Register Screen
 import React, { useState, useEffect } from 'react'
+import axios from 'axios' // import so we can make the upload request
 import { Link as RouterLink } from 'react-router-dom'
 import {
   Button,
@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { listProductDetails, updateProduct } from '../actions/productActions' // STEP 69
+import { listProductDetails, updateProduct } from '../actions/productActions'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
 
 const ProductEditScreen = ({ match, history }) => {
@@ -28,13 +28,13 @@ const ProductEditScreen = ({ match, history }) => {
   const [countInStock, setCountInStock] = useState(0)
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
+  const [uploading, setUploading] = useState(false) // State to keep track of uploading
 
   const dispatch = useDispatch()
 
   const productDetails = useSelector(state => state.productDetails)
   const { loading, error, product } = productDetails
 
-  // STEP 69: Get productUpdate related data from State
   const productUpdate = useSelector(state => state.productUpdate)
   const {
     loading: loadingUpdate,
@@ -64,7 +64,6 @@ const ProductEditScreen = ({ match, history }) => {
 
   const submitHandler = e => {
     e.preventDefault()
-    // STEP 69
     dispatch(
       updateProduct({
         _id: productId,
@@ -79,6 +78,30 @@ const ProductEditScreen = ({ match, history }) => {
     )
   }
 
+  const uploadFileHanlder = async e => {
+    // this is an array as we can upload multiple files
+    // but we only want the first item as we are uploading only one image
+    const file = e.target.files[0]
+    const formData = new FormData()
+    formData.append('image', file)
+    setUploading(true)
+
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+
+      const { data } = await axios.post('/api/upload', formData, config)
+      setImage(data)
+      setUploading(false)
+    } catch (error) {
+      console.error(error)
+      setUploading(false)
+    }
+  }
+
   return (
     <>
       <Link as={RouterLink} to='/admin/productlist'>
@@ -89,7 +112,6 @@ const ProductEditScreen = ({ match, history }) => {
           <Heading as='h1' mb='8' fontSize='3xl'>
             Edit Product
           </Heading>
-          {/* // STEP 69 */}
           {loadingUpdate && <Loader />}
           {errorUpdate && <Message type='error'>{error}</Message>}
           {loading ? (
@@ -129,7 +151,13 @@ const ProductEditScreen = ({ match, history }) => {
                   value={image}
                   onChange={e => setImage(e.target.value)}
                 />
+                <Input
+                  type='file'
+                  id='image-file'
+                  onChange={uploadFileHanlder}
+                />
               </FormControl>
+              {uploading && <Loader />}
               <Spacer h='3' />
               {/* DESCRIPTION */}
               <FormControl id='text' isRequired>
