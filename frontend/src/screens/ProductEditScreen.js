@@ -9,14 +9,14 @@ import {
   FormLabel,
   Input,
   Spacer,
-  Link,
-  Checkbox
+  Link
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { listProductDetails } from '../actions/productActions' // STEP 68
+import { listProductDetails, updateProduct } from '../actions/productActions' // STEP 69
+import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
 
 const ProductEditScreen = ({ match, history }) => {
   const productId = match.params.id
@@ -34,23 +34,49 @@ const ProductEditScreen = ({ match, history }) => {
   const productDetails = useSelector(state => state.productDetails)
   const { loading, error, product } = productDetails
 
+  // STEP 69: Get productUpdate related data from State
+  const productUpdate = useSelector(state => state.productUpdate)
+  const {
+    loading: loadingUpdate,
+    error: errorUpdate,
+    success: successUpdate
+  } = productUpdate
+
   useEffect(() => {
-    if (!product.name || product._id !== productId) {
-      dispatch(listProductDetails(productId))
+    // STEP 69
+    if (successUpdate) {
+      dispatch({ type: PRODUCT_UPDATE_RESET })
+      history.push('/admin/productlist')
     } else {
-      setName(product.name)
-      setPrice(product.price)
-      setImage(product.image)
-      setBrand(product.brand)
-      setCategory(product.category)
-      setCountInStock(product.countInStock)
-      setDescription(product.description)
+      if (!product.name || product._id !== productId) {
+        dispatch(listProductDetails(productId))
+      } else {
+        setName(product.name)
+        setPrice(product.price)
+        setImage(product.image)
+        setBrand(product.brand)
+        setCategory(product.category)
+        setCountInStock(product.countInStock)
+        setDescription(product.description)
+      }
     }
-  }, [dispatch, history, productId, product])
+  }, [dispatch, history, productId, product, successUpdate])
 
   const submitHandler = e => {
     e.preventDefault()
-    // STEP 63 => UPDATE PRODUCT
+    // STEP 69
+    dispatch(
+      updateProduct({
+        _id: productId,
+        name,
+        price,
+        image,
+        brand,
+        category,
+        description,
+        countInStock
+      })
+    )
   }
 
   return (
@@ -63,9 +89,9 @@ const ProductEditScreen = ({ match, history }) => {
           <Heading as='h1' mb='8' fontSize='3xl'>
             Edit Product
           </Heading>
-          {/* STEP 63 -> checking for loadingUpdate and errorUpdate */}
-          {/* {loadingUpdate && <Loader />}
-          {errorUpdate && <Message type='error'>{errorUpdate}</Message>} */}
+          {/* // STEP 69 */}
+          {loadingUpdate && <Loader />}
+          {errorUpdate && <Message type='error'>{error}</Message>}
           {loading ? (
             <Loader />
           ) : error ? (
