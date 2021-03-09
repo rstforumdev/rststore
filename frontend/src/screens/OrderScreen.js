@@ -1,11 +1,9 @@
-// Copied from PlaceOrderScreen and then modified
-
 import React, { useEffect, useState } from 'react'
 import axios from 'axios' // (PP (STEP 1))
 import { PayPalButton } from 'react-paypal-button-v2' // (PP (STEP 2))
 import { Link as RouterLink } from 'react-router-dom'
 import {
-  // Button,
+  Button,
   Flex,
   Heading,
   Box,
@@ -17,29 +15,35 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { getOrderDetails, payOrder } from '../actions/orderActions' // (PP Step 3)
+import {
+  getOrderDetails,
+  payOrder,
+  deliverOrder
+} from '../actions/orderActions'
+import { ORDER_DELIVER_RESET } from '../constants/orderConstants'
 
-// (PP (STEP 4) -> to avoid useEffect loop) (we will dispatch directly)
 import { ORDER_PAY_RESET } from '../constants/orderConstants'
 
-const OrderScreen = ({ match }) => {
+const OrderScreen = ({ match, history }) => {
   const orderId = match.params.id
 
-  // (PP (STEP 1)) PAYPAL SDK READY
   const [sdkReady, setSdkReady] = useState(false)
 
   const dispatch = useDispatch()
 
-  // get the orderDetails state from our store
   const orderDetails = useSelector(state => state.orderDetails)
   const { order, loading, error } = orderDetails
 
-  // (PP (STEP 1))
   const orderPay = useSelector(state => state.orderPay)
-  const { loading: loadingPay, success: successPay } = orderPay // renaming destructring
+  const { loading: loadingPay, success: successPay } = orderPay
 
-  // Calculate Items Price
-  // If we don't put it in !loading we will get an error.
+  // Get the orderDeliver state and the userLogin states
+  const orderDeliver = useSelector(state => state.orderDeliver)
+  const { loading: loadingDeliver, success: successDeliver } = orderDeliver
+
+  const userLogin = useSelector(state => state.userLogin)
+  const { userInfo } = userLogin
+
   if (!loading) {
     order.itemsPrice = order.orderItems.reduce(
       (acc, currItem) => acc + currItem.price * (currItem.qty || 1),
@@ -48,10 +52,12 @@ const OrderScreen = ({ match }) => {
   }
 
   useEffect(() => {
-    // (PP (STEP 1)) dynamically add paypal script to page
+    if (!userInfo) {
+      history.push('/login')
+    }
+
     const addPayPalScript = async () => {
       const { data: clientId } = await axios.get('/api/config/paypal')
-      // console.log(clientId)
       const script = document.createElement('script')
       script.type = 'text/javascript'
       script.async = true
@@ -61,31 +67,29 @@ const OrderScreen = ({ match }) => {
       }
       document.body.appendChild(script)
     }
-    // addPayPalScript() // just for testing
-    // if we come to the page and order isn't there, then also run this dispatch
-    // and run it when successPay changes
-    if (!order || successPay) {
-      // START (PP (STEP LAST))
-      dispatch({ type: ORDER_PAY_RESET }) // IN THE END
-      // END (PP (STEP LAST))
+    // --> if order doesn't exist, is paid or is delivered then
+    if (!order || successPay || successDeliver) {
+      dispatch({ type: ORDER_PAY_RESET })
+      dispatch({ type: ORDER_DELIVER_RESET })
       dispatch(getOrderDetails(orderId))
     } else if (!order.isPaid) {
-      // see if it's not paid
       if (!window.paypal) {
-        // see if paypal script is loaded
         addPayPalScript() // if not load it
       } else {
         setSdkReady(true) // if loaded, then set sdk to ready
       }
     }
-  }, [dispatch, orderId, successPay, order])
+  }, [dispatch, orderId, successPay, order, successDeliver])
 
-  // (PP (STEP 3 -> after adding the buttons))
   // This function is where we call our dispatch action
   // payment result is something we get from paypal
   const successPaymentHandler = paymentResult => {
     console.log('THIS IS THE PAYMENT RESULT', paymentResult)
     dispatch(payOrder(orderId, paymentResult))
+  }
+
+  const deliverHandler = () => {
+    dispatch(deliverOrder(order))
   }
 
   return loading ? (
@@ -120,7 +124,7 @@ const OrderScreen = ({ match }) => {
                 {order.shippingAddress.postalCode},{' '}
                 {order.shippingAddress.country}
               </Text>
-              {order.isDelievered ? (
+              {order.isDelivered ? (
                 <Message type='success'>
                   Delievered on {order.delieveredAt}
                 </Message>
@@ -260,6 +264,19 @@ const OrderScreen = ({ match }) => {
                 )}
               </Box>
             )}
+            {/* For Admins only */}
+            {loadingDeliver && <Loader />}
+            {userInfo &&
+              userInfo.isAdmin &&
+              order.isPaid &&
+              !order.isDelivered && (
+                <Button
+                  type='button'
+                  colorScheme='teal'
+                  onClick={deliverHandler}>
+                  Mark as delivered
+                </Button>
+              )}
           </Flex>
         </Grid>
       </Flex>
