@@ -29,11 +29,6 @@ app.use(express.json()) // accept JSON data in the body
 //   next()
 // })
 
-// show this once basic server setup is done
-app.get('/', (req, res) => {
-  res.send('API is running...')
-})
-
 app.use('/api/products', productRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/orders', orderRoutes)
@@ -47,6 +42,19 @@ app.get('/api/config/paypal', (req, res) =>
 // Making the uploads folder static
 const __dirname = path.resolve()
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '/frontend/build')))
+
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+  )
+} else {
+  // show this once basic server setup is done
+  app.get('/', (req, res) => {
+    res.send('API is running...')
+  })
+}
 
 // We could have written all the code here, but
 // it can get messy. Hence we added them in another folder
