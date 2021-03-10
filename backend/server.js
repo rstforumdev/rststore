@@ -50,7 +50,6 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
   )
 } else {
-  // show this once basic server setup is done
   app.get('/', (req, res) => {
     res.send('API is running...')
   })
